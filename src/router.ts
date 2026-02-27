@@ -14,10 +14,6 @@ const routes = [
     component: Pastes,
   },
   {
-    path: '/comments/:id',
-    component: Comments,
-  },
-  {
     path: '/about',
     component: About,
   },
