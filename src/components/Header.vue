@@ -1,12 +1,11 @@
 <template>
-  <!-- <Header> </Header> -->
   <header class="w-full bg-zinc-900 border-b border-zinc-800">
     <div class="w-full px-6 py-3 flex items-center justify-between">
 
       <!-- LEFT: Logo -->
       <router-link
         to="/"
-        class="flex items-center gap-2 text-emerald-400 font-semibold text-xl hover:text-emerald-300 transition"
+        class="flex items-center gap-2 text-emerald-400 font-semibold text-lg hover:text-emerald-300 transition"
       >
         🐦 <span class="text-white">PasteBin</span>
       </router-link>
@@ -25,12 +24,11 @@
         <!-- Auth section -->
         <div class="flex items-center gap-3">
           <!-- Authenticated -->
-          <div v-if="isAuthenticated && user" class="flex items-center gap-4 text-white text-base text-emerald-400">
-            {{ user.name }}
+          <div v-if="isAuthenticated && user" class="flex items-center gap-2 text-white text-sm">
+            Welcome, {{ user.name }}
             <button
               @click="logout"
-              class="px-4 py-2 bg-emerald-600 text-white text-sm rounded hover:bg-emerald-700
-              transition whitespace-nowrap"
+              class="px-3 py-1 bg-emerald-600 text-white text-xs rounded hover:bg-emerald-700 transition"
             >
               Logout
             </button>
@@ -68,62 +66,4 @@
       </div>
     </div>
   </header>
-  <main class="min-h-screen bg-zinc-800">
-    <router-view />
-  </main>
 </template>
-
-<script>
-import Header from "@/components/Header.vue";
-import {useAuthStore} from "@/stores/authStore.js";
-import Button from "primevue/button";
-import Menubar from "primevue/menubar";
-import InputText from "primevue/inputtext";
-export default {
-  components: {Button,Menubar, InputText},
-  name: 'App',
-  components: {
-    Header  // Registers <Header> for use in template
-  },
-  data(){
-    return{
-      email: '',
-      password: '',
-      authStore: useAuthStore(),
-    };
-  },
-  computed:{
-    isAuthenticated(){
-      return this.authStore.isAuthenticated;
-    },
-    user(){
-      return this.authStore.user;
-    },
-    authError(){
-      return this.authStore.errorMessage;
-    },
-  },
-  methods:{
-    logout(){
-      this.authStore.logout();
-    },
-    login(){
-      this.authStore.login({email: this.email, password: this.password});
-    },
-  },
-  mounted(){
-    const token = localStorage.getItem("token");
-    if(token){
-      this.authStore.isAuthenticated = true;
-      this.authStore.getUser();
-    }
-  },
-};
-</script>
-<style>
-.error{
-  color:red;
-}
-</style>
-
-<style scoped></style>
