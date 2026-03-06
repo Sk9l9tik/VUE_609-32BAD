@@ -66,6 +66,11 @@ export default {
       return `${day}.${month}.${year}`;
     }
   },
+  computed: {
+    token() {
+      return localStorage.getItem("token");
+    }
+  },
   async mounted() {
     try {
       this.loading = true;
@@ -75,7 +80,20 @@ export default {
         throw new Error('ID не указан');
       }
 
-      const response = await fetch(`http://127.0.0.1:6001/api/pastes/${id}`);
+
+        const headers = {
+          "Content-Type": "application/json",
+          "Accept": "application/json",
+        };
+
+        if (this.token) {
+          headers['Authorization'] = `Bearer ${this.token}`;
+        }
+
+        const response = await fetch(`http://127.0.0.1:6001/api/pastes/${id}`, {
+          method: "GET",
+          headers,
+        });
 
       if (!response.ok) {
         if (response.status === 404) {

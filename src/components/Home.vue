@@ -11,22 +11,26 @@
         <form @submit.prevent="createPaste" class="space-y-6">
           <div>
             <label class="block text-[14pt] font-semibold text-zinc-300 mb-2 pt-4">Title</label>
-            <input
-              v-model="form.title"
-              type="text"
-              placeholder="Без названия"
-              class="w-full bg-zinc-800/50 border border-zinc-600 rounded-xl px-5 py-3 text-lg"
-            />
+            <InputText v-model="form.title" name="title" type="text" placeholder="Without title"
+            class="w-full bg-zinc-800/50 border border-zinc-600 rounded-xl px-5 py-3 text-lg font-mono" />
+            <!-- <input -->
+            <!--   v-model="form.title" -->
+            <!--   type="text" -->
+            <!--   placeholder="Без названия" -->
+            <!--   class="w-full bg-zinc-800/50 border border-zinc-600 rounded-xl px-5 py-3 text-lg" -->
+            <!-- /> -->
           </div>
 
           <div>
             <label class="block text-[14pt] font-semibold text-zinc-300 mb-2 pt-5">Main Text</label>
-            <textarea
+            <!-- <Textarea v-model="form.main_text" rows="12" placeholder="Ваш код, текст или секрет..." -->
+            <!--   class="w-full bg-zinc-800/50 border border-zinc-600 rounded-xl px-5 py-3 text-lg font-mono" /> -->
+            <Textarea
               v-model="form.main_text"
               rows="12"
               placeholder="Ваш код, текст или секрет..."
               class="w-full bg-zinc-800/50 border border-zinc-600 rounded-xl px-5 py-3 text-lg font-mono"
-            ></textarea>
+            />
           </div>
 
           <div class="grid md:grid-cols-2 gap-6 pt-4 border-t border-zinc-700/50">
@@ -35,14 +39,12 @@
               <label class="block text-[14pt] font-semibold text-zinc-300 mb-3">Access</label>
               <div class="flex flex-wrap gap-2">
                 <label class="flex items-center gap-2 p-3 bg-zinc-800/50 border border-zinc-600 rounded-xl cursor-pointer">
-                  <input type="radio" v-model="form.access" value="1" class="" />
-                  <!-- <span class="w-5 h-5 border-2 border-zinc-500 rounded-full"></span> -->
+                  <RadioButton v-model="form.access" inputId="public" name="public" value="1" />
                   <span class="text-sm font-medium">Public</span>
                 </label>
 
                 <label class="flex items-center gap-2 p-3 bg-zinc-800/50 border border-zinc-600 rounded-xl cursor-pointer">
-                  <input type="radio" v-model="form.access" value="0" class="" />
-                  <!-- <span class="w-5 h-5 border-2 border-zinc-500 rounded-full"></span> -->
+                  <RadioButton v-model="form.access" inputId="private" name="private" value="0" />
                   <span class="text-sm font-medium">Private</span>
                 </label>
               </div>
@@ -53,13 +55,12 @@
               <label class="block text-[14pt] font-semibold text-zinc-300 mb-3">Expireation</label>
               <select
                 v-model="form.expiration"
-                class="w-full bg-zinc-800/50 border border-zinc-600 rounded-xl px-4 py-3 text-lg
-                "
+                class="w-full bg-zinc-800/50 border border-zinc-600 rounded-xl px-4 py-3 text-lg"
               >
-                <option :value="null">Навсегда</option>
-                <option :value="1">1 час</option>
-                <option :value="24">1 день</option>
-                <option :value="24 * 7">1 неделя</option>
+                <option :value="null">Never</option>
+                <option :value="1">1 hour</option>
+                <option :value="24">1 day</option>
+                <option :value="168">1 week</option>
               </select>
             </div>
           </div>
@@ -72,7 +73,7 @@
             rounded-2xl disabled:opacity-50"
           >
             <span v-if="loading">Creating...</span>
-            <span v-else>Create Paste</span>
+            <span v-else>Create a masterpiece</span>
           </button>
         </form>
 
@@ -86,7 +87,7 @@
             :to="`/pastes/${pasteId}`"
             class="block mt-2 underline"
           >
-            Посмотреть →
+            View →
           </router-link>
         </div>
       </div>
@@ -94,16 +95,22 @@
   </div>
 </template>
 
+
 <script>
+import RadioButton from 'primevue/radiobutton';
+import InputText from 'primevue/inputtext';
+import Textarea from 'primevue/textarea';
+
 export default {
+  components: { RadioButton, InputText, Textarea },
   name: "NewPaste",
   data() {
     return {
       form: {
         title: "",
         main_text: "",
-        access: "public",
-        expiration: null, // hours
+        access: "1", // Изменил на "1" вместо "public"
+        expiration: null,
       },
       loading: false,
       message: "",
@@ -111,74 +118,73 @@ export default {
       pasteId: null,
     };
   },
-
+  computed: {
+    // ✅ Получаем токен из localStorage
+    token() {
+      return localStorage.getItem("token");
+    }
+  },
   methods: {
-    // превращаем часы → timestamp (ISO)
     convertExpiration(hours) {
       if (hours === null) return null;
-
       const expireDate = new Date();
       expireDate.setHours(expireDate.getHours() + Number(hours));
-
       return expireDate.toISOString();
     },
-async createPaste() {
-  this.loading = true;
-  this.message = "";
+    async createPaste() {
+      this.loading = true;
+      this.message = "";
 
-  try {
-    const payload = {
-      title: this.form.title,
-      main_text: this.form.main_text,
-      access: this.form.access,
-      expiration: this.convertExpiration(this.form.expiration),
-    };
+      try {
+        const payload = {
+          title: this.form.title,
+          main_text: this.form.main_text,
+          access: this.form.access,
+          expiration: this.convertExpiration(this.form.expiration),
+        };
 
-    const response = await fetch("http://127.0.0.1:6001/api/pastes/create", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "Accept": "application/json"
-      },
-      body: JSON.stringify(payload),
-    });
+        // ✅ Правильная логика с токеном
+        const headers = {
+          "Content-Type": "application/json",
+          "Accept": "application/json",
+        };
 
-    if (!response.ok) {
-      const error = await response.json();
-      throw new Error(error.message || `Ошибка ${response.status}`);
+        if (this.token) {
+          headers['Authorization'] = `Bearer ${this.token}`;
+        }
+
+        const response = await fetch("http://127.0.0.1:6001/api/pastes/create", {
+          method: "POST",
+          headers,
+          body: JSON.stringify(payload),
+        });
+
+        if (!response.ok) {
+          const error = await response.json();
+          throw new Error(error.error || `Ошибка ${response.status}`);
+        }
+
+        const result = await response.json();
+
+        this.success = true;
+        this.pasteId = result.id;
+        this.message = "Paste created successfully!";
+
+        // Очистка формы
+        this.form = {
+          title: "",
+          main_text: "",
+          access: "1",
+          expiration: null,
+        };
+
+      } catch (error) {
+        this.success = false;
+        this.message = error.message || "Cannot create paste";
+      } finally {
+        this.loading = false;
+      }
     }
-
-    const result = await response.json();
-
-    this.success = true;
-    this.pasteId = result.id;
-    this.message = "Paste успешно создан!";
-
-    this.form = {
-      title: "",
-      main_text: "",
-      access: "public",
-      expiration: null,
-    };
-
-  } catch (error) {
-    this.success = false;
-    this.message = error.message || "Не удалось создать paste";
-  } finally {
-    this.loading = false;
   }
-}
-
-  },
 };
 </script>
-
-<!-- <style scoped> -->
-<!-- textarea::-webkit-scrollbar { -->
-<!--   width: 8px; -->
-<!-- } -->
-<!-- textarea::-webkit-scrollbar-thumb { -->
-<!--   background: #4a5568; -->
-<!--   border-radius: 4px; -->
-<!-- } -->
-<!-- </style> -->

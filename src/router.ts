@@ -2,6 +2,7 @@ import {createRouter , createWebHistory} from 'vue-router';
 import Home from '@/components/Home.vue';
 import About from '@/components/About.vue';
 import Pastes from '@/components/Pastes.vue';
+import Mypastes from '@/components/Mypastes.vue';
 import Comments from '@/components/Comments.vue';
 
 const routes = [
@@ -14,8 +15,16 @@ const routes = [
     component: Pastes,
   },
   {
+    path: '/comments/:id',
+    component: Comments,
+  },
+  {
     path: '/about',
     component: About,
+  },
+  {
+    path: '/mypastes',
+    component: Mypastes,
   },
 ]
 

@@ -1,129 +1,145 @@
 <template>
-  <!-- <Header> </Header> -->
-  <header class="w-full bg-zinc-900 border-b border-zinc-800">
-    <div class="w-full px-6 py-3 flex items-center justify-between">
-
-      <!-- LEFT: Logo -->
+  <Menubar :model="items" class="bg-[27272A]">
+    <template #start>
       <router-link
         to="/"
-        class="flex items-center gap-2 text-emerald-400 font-semibold text-xl hover:text-emerald-300 transition"
+        class="flex items-center gap-2 text-emerald-400 font-semibold text-xl mr-4"
       >
-        🐦 <span class="text-white">PasteBin</span>
+      <span class="text-white text-2xl"> 🐦</span>
       </router-link>
+    </template>
 
-      <!-- RIGHT: About + Auth -->
-      <div class="flex items-center gap-6">
-
-        <!-- About link -->
-        <router-link
-          to="/about"
-          class="text-emerald-400 text-sm uppercase tracking-wide hover:text-emerald-300 transition"
-        >
-          About
+    <template #item="{ item, props, hasSubmenu, root}">
+      <a class="flex items-center gap-2 px-4 py-2.5 rounded-md hover:dark:bg-gray-600">
+        <router-link v-if="item.route" :to="item.route" class="flex items-center w-full h-full">
+          <span :class="item.icon" class="pr-1"/>
+          <span class="font-medium">{{item.label}}</span>
         </router-link>
+      </a>
+    </template>
 
-        <!-- Auth section -->
+    <template #end>
+      <div class="flex items-center gap-6 mr-4">
         <div class="flex items-center gap-3">
-          <!-- Authenticated -->
           <div v-if="isAuthenticated && user" class="flex items-center gap-4 text-white text-base text-emerald-400">
-            {{ user.name }}
-            <button
+            <i class="pi pi-fw pi-user" />
+            <router-link to="/mypastes" class="text-white hover:text-emerald-300 transition">
+              {{ user.name }}
+            </router-link>
+            <Button
               @click="logout"
-              class="px-4 py-2 bg-emerald-600 text-white text-sm rounded hover:bg-emerald-700
-              transition whitespace-nowrap"
-            >
-              Logout
-            </button>
+              class="px-4 py-2 bg-emerald-600 text-white text-sm rounded hover:bg-emerald-700 transition whitespace-nowrap ml-2"
+              label="Logout"
+            />
           </div>
 
-          <!-- Login form -->
           <div v-else class="flex items-center gap-2">
             <form @submit.prevent="login" class="flex items-center gap-2">
-              <input
+              <InputText
                 v-model="email"
                 type="email"
-                id="email"
-                required
                 placeholder="Email"
-                class="px-3 py-2 bg-zinc-800 border border-zinc-600 rounded text-white text-sm placeholder-gray-400 focus:outline-none focus:border-emerald-400 w-28"
+                class="w-28 h-10 text-sm"
+                :class="['p-inputtext-sm', {'p-invalid': authError}]"
               />
-              <input
+              <InputText
                 v-model="password"
                 type="password"
-                id="password"
-                required
                 placeholder="Password"
-                class="px-3 py-2 bg-zinc-800 border border-zinc-600 rounded text-white text-sm placeholder-gray-400 focus:outline-none focus:border-emerald-400 w-28"
+                class="w-28 h-10 text-sm"
+                :class="['p-inputtext-sm', {'p-invalid': authError}]"
               />
-              <button
+              <Button
                 type="submit"
-                class="px-4 py-2 bg-emerald-600 text-white text-sm rounded hover:bg-emerald-700 transition whitespace-nowrap"
-              >
-                Login
-              </button>
+                label="Login"
+                class="h-10 text-sm ml-1"
+                severity="success"
+              />
             </form>
-            <p v-if="authError" class="error text-xs ml-2 whitespace-nowrap">{{ authError }}</p>
+            <div v-if="authError" class="error ml-2 whitespace-nowrap flex items-center">
+              <i class="pi pi-exclamation-triangle mr-1" />
+              <span class="text-xs text-red-400">{{ authError }}</span>
+            </div>
           </div>
         </div>
       </div>
-    </div>
-  </header>
-  <main class="min-h-screen bg-zinc-800">
+    </template>
+  </Menubar>
+
+  <main class="min-h-screen bg-zinc-800 pt-2">
     <router-view />
   </main>
 </template>
 
 <script>
-import Header from "@/components/Header.vue";
-import {useAuthStore} from "@/stores/authStore.js";
+import { useAuthStore } from "@/stores/authStore.js";
 import Button from "primevue/button";
 import Menubar from "primevue/menubar";
 import InputText from "primevue/inputtext";
+
 export default {
-  components: {Button,Menubar, InputText},
   name: 'App',
   components: {
-    Header  // Registers <Header> for use in template
+    Button,
+    Menubar,
+    InputText
   },
   data(){
     return{
       email: '',
       password: '',
       authStore: useAuthStore(),
+      items: [
+        {
+          label: 'Main Page',
+          icon: 'pi pi-fw pi-home',
+          route: '/',
+          shortcut: 'Ctrl + H',
+          submenu: [
+          ],
+        },
+        {
+          label: 'About',
+          icon: 'pi pi-fw pi-info-circle',
+          route: '/About',
+        },
+        {
+          label: 'My pastes',
+          icon: 'pi pi-fw pi-list',
+          route: '/mypastes'
+        },
+      ]
     };
   },
-  computed:{
-    isAuthenticated(){
+  computed: {
+    isAuthenticated() {
       return this.authStore.isAuthenticated;
     },
-    user(){
+    user() {
       return this.authStore.user;
     },
-    authError(){
+    authError() {
       return this.authStore.errorMessage;
-    },
+    }
   },
-  methods:{
-    logout(){
+  methods: {
+    logout() {
       this.authStore.logout();
     },
-    login(){
-      this.authStore.login({email: this.email, password: this.password});
-    },
+    login() {
+      this.authStore.login({ email: this.email, password: this.password });
+    }
   },
-  mounted(){
+  mounted() {
     const token = localStorage.getItem("token");
-    if(token){
+    if (token) {
       this.authStore.isAuthenticated = true;
       this.authStore.getUser();
     }
-  },
+  }
 };
 </script>
-<style>
-.error{
-  color:red;
-}
-</style>
 
-<style scoped></style>
+<style scoped>
+
+</style
