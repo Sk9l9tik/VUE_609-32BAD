@@ -1,5 +1,7 @@
 <template>
-  <Menubar :model="items" class="bg-[27272A]">
+  <div class="pt-12 min-2xl:min-w-[1225px] max-h-[120px] fixed top-0 z-99 placed-items-center
+    lg:min-w-[400px] xl:min-w-[1200px] max-sm:min-w-[345px]">
+  <Menubar :model="items" class="bg-[27272A] ">
     <template #start>
       <router-link
         to="/"
@@ -32,7 +34,6 @@
               label="Logout"
             />
           </div>
-
           <div v-else class="flex items-center gap-2">
             <form @submit.prevent="login" class="flex items-center gap-2">
               <InputText
@@ -65,10 +66,11 @@
       </div>
     </template>
   </Menubar>
-
-  <main class="min-h-screen bg-zinc-800 pt-2">
+  </div>
+  <!-- <div class="min-xl:pl-14"> -->
+  <div class="pt-[120px] pl-3 min-xl:min-w-6xl no-scroll">
     <router-view />
-  </main>
+  </div>
 </template>
 
 <script>
@@ -140,6 +142,10 @@ export default {
 };
 </script>
 
-<style scoped>
+<style>
+
+.no-scroll {
+  overflow: hidden;
+}
 
 </style
