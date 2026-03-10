@@ -1,7 +1,8 @@
 <template>
-  <div class="pt-12 min-2xl:min-w-[1225px] max-h-[120px] fixed top-0 z-99 placed-items-center
-    lg:min-w-[400px] xl:min-w-[1200px] max-sm:min-w-[345px]">
-  <Menubar :model="items" class="bg-[27272A] ">
+  <!-- <div class="pt-12 min-2xl:min-w-[1225px] max-h-[120px] fixed top-0 z-99 placed-items-center -->
+    <!-- min-lg:min-w-[400px] min-xl:min-w-[1200px] max-sm:min-w-[500px] min-sm:min-w-[755px]"> -->
+  <div class="pt-12 max-w-screen fixed top-3 left-10 right-10 z-50">
+  <Menubar :model="items" class="bg-[27272A]">
     <template #start>
       <router-link
         to="/"
