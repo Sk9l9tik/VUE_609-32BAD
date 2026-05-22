@@ -4,6 +4,7 @@ import About from '@/components/About.vue';
 import Pastes from '@/components/Pastes.vue';
 import Mypastes from '@/components/Mypastes.vue';
 import Comments from '@/components/Comments.vue';
+import EditPaste from '@/components/EditPaste.vue';
 
 const routes = [
   {
@@ -13,6 +14,10 @@ const routes = [
   {
     path: '/pastes/:id',
     component: Pastes,
+  },
+  {
+    path: '/edit/:id',
+    component: EditPaste,
   },
   {
     path: '/comments/:id',

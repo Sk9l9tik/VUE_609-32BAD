@@ -61,25 +61,71 @@ export const useDataStore = defineStore('data', {
       }
     },
 
-    async get_pastes(page = 0, perpage = 8) {
+    async get_pastes(page = 0, perPage = 6, search = '') {
       this.errorMessage = "";
       try {
-        const response = await axios.get(backendUrl + '/user/pastes', {
-          params: { page, perpage },
-        });
+        const params: Record<string, any> = { page, perpage: perPage };
+        if (search) params.search = search;
+        const response = await axios.get(backendUrl + '/user/pastes', { params });
         this.pastes = response.data;
       } catch (error: any) {
         this._handleError(error);
       }
     },
 
-    async get_pastes_total() {
-      this.errorMessage = "";
+    async get_pastes_total(search = '') {
       try {
-        const response = await axios.get(backendUrl + '/user/total-pastes');
+        const params: Record<string, any> = {};
+        if (search) params.search = search;
+        const response = await axios.get(backendUrl + '/user/total-pastes', { params });
         this.totalPastes = response.data;
       } catch (error: any) {
+        console.error('Error fetching total:', error);
+      }
+    },
+
+
+    async delete_paste(id: number) {
+      this.errorMessage = "";
+      try {
+        await axios.delete(backendUrl + `/pastes/${id}`);
+      } catch (error: any) {
         this._handleError(error);
+        throw error;
+      }
+    },
+
+    async update_paste(id: number, payload: {
+      title: string;
+      main_text: string;
+      access: string;
+      expiration?: string | number | null;
+      changeExpiration: boolean;
+      image?: File | null;
+      remove_image?: boolean;
+    }) {
+      this.errorMessage = "";
+      try {
+        const formData = new FormData();
+        formData.append('title', payload.title);
+        formData.append('main_text', payload.main_text);
+        formData.append('access', payload.access);
+        if (payload.changeExpiration) {
+          formData.append('expiration', payload.expiration !== null && payload.expiration !== undefined ? String(payload.expiration) : '');
+        }
+        if (payload.image) {
+          formData.append('image', payload.image);
+        } else if (payload.remove_image) {
+          formData.append('remove_image', '1');
+        }
+
+        const response = await axios.post(backendUrl + `/pastes/${id}/update`, formData, {
+          headers: { 'Content-Type': 'multipart/form-data' },
+        });
+        return response.data;
+      } catch (error: any) {
+        this._handleError(error);
+        throw error;
       }
     },
 

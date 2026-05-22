@@ -9,7 +9,7 @@ import router from '@/router.ts'
 import PrimeVue from 'primevue/config';
 import Aura from '@primeuix/themes/aura';
 import 'primeicons/primeicons.css';
-import {ToastService} from "primevue";
+import {ToastService, ConfirmationService} from "primevue";
 
 import "./style.css"
 
@@ -28,5 +28,6 @@ app.use(PrimeVue,{
   }
 })
 app.use(ToastService)
+app.use(ConfirmationService)
 
 app.mount('#app')

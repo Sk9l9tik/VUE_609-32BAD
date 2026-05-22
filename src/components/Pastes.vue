@@ -5,8 +5,8 @@
 
       <div class="flex flex-wrap gap-4 text-sm text-gray-400 mb-6">
         <span>Author: {{ paste.user?.name || pastes.author_id }}</span>
-        <span>Created at: {{ formatDate(paste.created_at) }}</span>
-        <span v-if="paste.expiration">Expires: {{ formatDate(paste.expiration) }}</span>
+        <span>Created at: {{ formatDate(paste.created_at, true) }}</span>
+        <span>Expires: {{ formatDate(paste.expiration, true) || 'Never' }}</span>
         <span :class="paste.access ? 'text-green-400' : 'text-red-400'">
           Access: {{ paste.access ? 'Public' : 'Private' }}
         </span>
@@ -91,12 +91,19 @@ export default {
     },
   },
   methods: {
-    formatDate(dateString) {
+    formatDate(dateString, includeTime = false) {
       if (!dateString) return '';
       const date = new Date(dateString);
       const day = String(date.getDate()).padStart(2, '0');
       const month = String(date.getMonth() + 1).padStart(2, '0');
       const year = date.getFullYear();
+
+      if (includeTime) {
+        const hours = String(date.getHours()).padStart(2, '0');
+        const minutes = String(date.getMinutes()).padStart(2, '0');
+        return `${day}.${month}.${year} ${hours}:${minutes}`;
+      }
+
       return `${day}.${month}.${year}`;
     },
   },
