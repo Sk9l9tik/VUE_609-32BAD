@@ -4,7 +4,8 @@ WORKDIR /app
 ENV NODE_OPTIONS=--openssl-legacy-provider
 
 # Устанавливаем зависимости
-COPY package.json ./
+RUN chown node:node /app
+COPY --chown=node:node package*.json ./
 # RUN apk add git
 # RUN apk add --update --no-cache curl jq py3-configobj py3-pip py3-setuptools python3 python3-dev
 # устанавливаем зависимости проекта

@@ -35,6 +35,24 @@
               label="Logout"
             />
           </div>
+          <div v-else-if="pendingSignup" class="flex items-center gap-2 text-white text-sm">
+            <span class="whitespace-nowrap">
+              No account for <strong>{{ pendingSignup.email }}</strong>. Create one?
+            </span>
+            <Button
+              @click="register"
+              label="Create account"
+              class="h-10 text-sm"
+              severity="success"
+            />
+            <Button
+              @click="cancelSignup"
+              label="Not now"
+              class="h-10 text-sm"
+              severity="secondary"
+              outlined
+            />
+          </div>
           <div v-else class="flex items-center gap-2">
             <form @submit.prevent="login" class="flex items-center gap-2">
               <InputText
@@ -53,7 +71,7 @@
               />
               <Button
                 type="submit"
-                label="Login"
+                label="Sign in / Sign up"
                 class="h-10 text-sm ml-1"
                 severity="success"
               />
@@ -123,6 +141,9 @@ export default {
     },
     authError() {
       return this.authStore.errorMessage;
+    },
+    pendingSignup() {
+      return this.authStore.pendingSignup;
     }
   },
   methods: {
@@ -131,6 +152,12 @@ export default {
     },
     login() {
       this.authStore.login({ email: this.email, password: this.password });
+    },
+    register() {
+      this.authStore.register();
+    },
+    cancelSignup() {
+      this.authStore.cancelSignup();
     }
   },
   mounted() {
