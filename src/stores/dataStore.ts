@@ -1,7 +1,7 @@
 import { defineStore } from "pinia";
 import axios from 'axios';
 
-const backendUrl = import.meta.env.VITE_BACKEND_URL;
+const backendUrl = import.meta.env.VITE_API_URL;
 
 axios.interceptors.request.use((config) => {
   const token = localStorage.getItem("token");

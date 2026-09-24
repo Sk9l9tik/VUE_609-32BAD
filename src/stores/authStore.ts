@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia';
 import axios, { AxiosError } from 'axios';
 
-const backendUrl = 'http://127.0.0.1:6001/api'; // should move to env
+const backendUrl = import.meta.env.VITE_API_URL;
 
 type LoginCredentials = {
   email: string;

@@ -164,7 +164,7 @@ import { useDataStore } from '@/stores/dataStore.js';
 import Toast from 'primevue/toast';
 import ConfirmPopup from 'primevue/confirmpopup';
 
-const backendUrl = import.meta.env.VITE_BACKEND_URL;
+const backendUrl = import.meta.env.VITE_API_URL;
 
 export default {
   name: 'MyPastes',

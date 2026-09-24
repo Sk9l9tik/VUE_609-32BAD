@@ -161,7 +161,7 @@ import Textarea from 'primevue/textarea';
 import Toast from 'primevue/toast';
 import { useDataStore } from '@/stores/dataStore.ts';
 
-const backendUrl = import.meta.env.VITE_BACKEND_URL;
+const backendUrl = import.meta.env.VITE_API_URL;
 
 export default {
   name: 'EditPaste',
